@@ -1,0 +1,182 @@
+
+{
+  "designSystem": {
+    "name": "LojixApp ERP Design System",
+    "description": "Sistema de design para aplicação ERP com foco em gestão de vendas e estoque",
+    "colors": {
+      "primary": "#4141E1",
+      "primaryHover": "#3A3AD4",
+      "background": "#FFFFFF",
+      "foreground": "#1A1A1A",
+      "muted": "#F8F9FA",
+      "mutedForeground": "#6B7280",
+      "border": "#E5E7EB",
+      "card": "#FFFFFF",
+      "secondary": "#F1F5F9",
+      "success": "#10B981",
+      "warning": "#F59E0B",
+      "error": "#EF4444",
+      "info": "#3B82F6"
+    },
+    "typography": {
+      "headingFont": "Cantarell",
+      "bodyFont": "Inter",
+      "sizes": {
+        "h1": "text-3xl font-bold",
+        "h2": "text-2xl font-bold", 
+        "h3": "text-xl font-semibold",
+        "body": "text-sm",
+        "caption": "text-xs"
+      }
+    },
+    "spacing": {
+      "containerPadding": "p-4 pt-6",
+      "cardPadding": "p-6",
+      "sectionGap": "space-y-6",
+      "gridGap": "gap-4"
+    }
+  },
+  "pageStructure": {
+    "layout": "dashboard",
+    "header": {
+      "title": {
+        "text": "Título da Página",
+        "className": "font-cantarell text-3xl font-bold tracking-tight text-foreground"
+      },
+      "subtitle": {
+        "text": "Descrição da funcionalidade da página",
+        "className": "font-inter text-sm text-muted-foreground"
+      },
+      "actions": [
+        {
+          "type": "button",
+          "variant": "outline",
+          "text": "Filtros",
+          "icon": "Filter",
+          "className": "font-inter"
+        },
+        {
+          "type": "button", 
+          "variant": "primary",
+          "text": "Ação Principal",
+          "icon": "Plus",
+          "className": "bg-primary hover:bg-primary-hover font-inter"
+        }
+      ]
+    },
+    "statsCards": {
+      "layout": "grid gap-4 md:grid-cols-2 lg:grid-cols-4",
+      "cardStructure": {
+        "borderAccent": "border-l-4",
+        "header": {
+          "layout": "flex flex-row items-center justify-between space-y-0 pb-2",
+          "title": "font-inter text-sm font-medium",
+          "icon": "h-4 w-4"
+        },
+        "content": {
+          "value": "font-cantarell text-2xl font-bold",
+          "change": {
+            "positive": "flex items-center text-xs text-green-600 font-inter mt-1",
+            "negative": "flex items-center text-xs text-red-600 font-inter mt-1"
+          }
+        }
+      },
+      "examples": [
+        {
+          "title": "Vendas Hoje",
+          "value": "R$ 13.647,00",
+          "change": "+12% em relação a ontem",
+          "changeType": "positive",
+          "icon": "DollarSign",
+          "borderColor": "border-l-primary",
+          "iconColor": "text-primary"
+        },
+        {
+          "title": "Pedidos Hoje", 
+          "value": "28",
+          "change": "+7 novos pedidos",
+          "changeType": "positive",
+          "icon": "ShoppingCart",
+          "borderColor": "border-l-blue-500",
+          "iconColor": "text-blue-500"
+        }
+      ]
+    },
+    "contentSections": {
+      "mainContent": {
+        "layout": "Card component with CardHeader and CardContent",
+        "header": {
+          "title": "font-cantarell text-xl font-semibold",
+          "actions": "flex gap-2 with search input and action buttons"
+        },
+        "searchInput": {
+          "className": "relative with Search icon positioned absolute left-3",
+          "placeholder": "Buscar por...",
+          "inputClassName": "pl-9 font-inter"
+        },
+        "table": {
+          "component": "Table from shadcn/ui",
+          "headers": "font-inter",
+          "cells": "font-inter with appropriate font weights"
+        }
+      },
+      "twoColumnLayout": {
+        "layout": "grid gap-6 lg:grid-cols-2",
+        "leftColumn": {
+          "type": "alert/warning section",
+          "borderColor": "border-red-200",
+          "backgroundColor": "bg-red-50",
+          "itemBorder": "border-red-200"
+        },
+        "rightColumn": {
+          "type": "success/info section", 
+          "borderColor": "border-green-200",
+          "backgroundColor": "bg-green-50",
+          "itemBorder": "border-green-200"
+        }
+      }
+    },
+    "quickActions": {
+      "layout": "grid gap-4 md:grid-cols-3 or md:grid-cols-4",
+      "cardStructure": {
+        "className": "hover:shadow-md transition-shadow cursor-pointer",
+        "content": "flex items-center p-6",
+        "icon": {
+          "container": "w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4",
+          "size": "h-6 w-6"
+        },
+        "text": {
+          "title": "font-cantarell font-semibold", 
+          "description": "font-inter text-sm text-muted-foreground"
+        }
+      }
+    }
+  },
+  "components": {
+    "statusBadges": {
+      "success": "inline-flex items-center px-2 py-1 rounded-full text-xs font-inter font-medium bg-green-100 text-green-800",
+      "warning": "inline-flex items-center px-2 py-1 rounded-full text-xs font-inter font-medium bg-yellow-100 text-yellow-800", 
+      "error": "inline-flex items-center px-2 py-1 rounded-full text-xs font-inter font-medium bg-red-100 text-red-800"
+    },
+    "buttons": {
+      "primary": "bg-primary hover:bg-primary-hover font-inter",
+      "outline": "variant=outline font-inter",
+      "ghost": "variant=ghost font-inter"
+    },
+    "cards": {
+      "default": "Card component from shadcn/ui",
+      "withAccent": "border-l-4 with specific color",
+      "interactive": "hover:shadow-md transition-shadow cursor-pointer"
+    }
+  },
+  "iconUsage": {
+    "source": "lucide-react",
+    "commonIcons": ["Plus", "Search", "Filter", "Eye", "DollarSign", "ShoppingCart", "Package", "Users", "Target", "TrendingUp", "TrendingDown", "AlertTriangle", "BarChart3"],
+    "sizing": "h-4 w-4 for small icons, h-5 w-5 for medium, h-6 w-6 for large"
+  },
+  "responsiveDesign": {
+    "mobile": "Stack elements vertically, full width buttons",
+    "tablet": "md:grid-cols-2 for most grids",
+    "desktop": "lg:grid-cols-3 or lg:grid-cols-4 for cards/actions"
+  }
+}
