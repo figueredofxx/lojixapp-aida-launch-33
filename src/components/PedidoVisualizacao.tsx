@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Printer, Download, Building2, MapPin, Phone, Mail } from "lucide-react";
+import { gerarPedidoPDF } from "@/utils/pdfGenerator";
 
 interface PedidoVisualizacaoProps {
   children: React.ReactNode;
@@ -23,6 +24,7 @@ interface PedidoVisualizacaoProps {
     total: number;
     formaPagamento: string;
     garantia: string;
+    vendedor?: string;
   };
 }
 
@@ -58,8 +60,24 @@ const PedidoVisualizacao = ({ children, pedido }: PedidoVisualizacaoProps) => {
   };
 
   const downloadPDF = () => {
-    // Implementar geração de PDF
-    console.log("Download PDF");
+    const dadosPedido = {
+      numero: pedidoExemplo.numero,
+      data: pedidoExemplo.data,
+      cliente: pedidoExemplo.cliente,
+      itens: pedidoExemplo.items.map(item => ({
+        nome: item.produto,
+        quantidade: item.quantidade,
+        preco: item.preco,
+        total: item.total
+      })),
+      subtotal: pedidoExemplo.subtotal,
+      desconto: pedidoExemplo.desconto,
+      total: pedidoExemplo.total,
+      formaPagamento: pedidoExemplo.formaPagamento,
+      vendedor: "Admin Sistema"
+    };
+    
+    gerarPedidoPDF(dadosPedido);
   };
 
   return (
