@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,7 +15,6 @@ import {
   Calculator, 
   Receipt, 
   User, 
-  CashRegister, 
   Eye,
   ScanLine,
   Percent,
@@ -206,7 +204,7 @@ const PDVPage = () => {
         <div className="flex gap-2">
           <CaixaDialog>
             <Button variant="outline" className="font-inter">
-              <CashRegister className="mr-2 h-4 w-4" />
+              <Calculator className="mr-2 h-4 w-4" />
               Gerenciar Caixa
             </Button>
           </CaixaDialog>

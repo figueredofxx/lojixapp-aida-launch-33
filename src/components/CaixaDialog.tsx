@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { CashRegister, DollarSign, ArrowUp, ArrowDown, Calculator } from "lucide-react";
+import { Calculator, DollarSign, ArrowUp, ArrowDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface CaixaDialogProps {
@@ -56,7 +56,7 @@ const CaixaDialog = ({ children }: CaixaDialogProps) => {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-cantarell text-xl font-semibold flex items-center">
-            <CashRegister className="h-5 w-5 mr-2" />
+            <Calculator className="h-5 w-5 mr-2" />
             Gerenciar Caixa
           </DialogTitle>
         </DialogHeader>
@@ -99,7 +99,7 @@ const CaixaDialog = ({ children }: CaixaDialogProps) => {
                 </div>
               </div>
               <Button onClick={abrirCaixa} className="w-full font-inter">
-                <CashRegister className="mr-2 h-4 w-4" />
+                <Calculator className="mr-2 h-4 w-4" />
                 Abrir Caixa
               </Button>
             </div>
