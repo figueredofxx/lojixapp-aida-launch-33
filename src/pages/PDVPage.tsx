@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -37,7 +36,7 @@ import CaixaDialog from "@/components/CaixaDialog";
 import PedidoVisualizacao from "@/components/PedidoVisualizacao";
 
 interface Cliente {
-  id: number;
+  id?: number;
   nome: string;
   cpf: string;
   telefone?: string;
@@ -143,6 +142,10 @@ const PDVPage = () => {
     setObservacoes("");
     setFormaPagamento("");
     setPaymentDialogOpen(false);
+  };
+
+  const handleClientSelect = (client: Cliente) => {
+    setSelectedClient(client);
   };
 
   return (
@@ -483,7 +486,7 @@ const PDVPage = () => {
       <ClientRegistrationForm
         isOpen={clientDialogOpen}
         onClose={() => setClientDialogOpen(false)}
-        onClientSelect={setSelectedClient}
+        onClientSelect={handleClientSelect}
         existingClients={clientesExistentes}
       />
 
