@@ -5,17 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Package, BarChart3, AlertTriangle, TrendingUp, Search, Filter, Eye, Boxes, Tag } from "lucide-react";
 import { ProductRegistrationForm } from "@/components/ProductRegistrationForm";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { StockLaunchForm } from "@/components/StockLaunchForm";
 
 const EstoquePage = () => {
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
+  const [showStockLaunchForm, setShowStockLaunchForm] = useState(false);
 
   const lowStockProducts = [
     { nome: "iPhone 15 Pro Max", categoria: "Smartphones", estoque: 3, minimo: 10, valor: "R$ 8.999,00" },
@@ -240,14 +234,14 @@ const EstoquePage = () => {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setShowStockLaunchForm(true)}>
           <CardContent className="flex items-center p-6">
             <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
               <Boxes className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h3 className="font-cantarell font-semibold">Entrada</h3>
-              <p className="font-inter text-sm text-muted-foreground">Registrar compra</p>
+              <h3 className="font-cantarell font-semibold">Lançar Estoque</h3>
+              <p className="font-inter text-sm text-muted-foreground">Registrar entrada</p>
             </div>
           </CardContent>
         </Card>
@@ -283,6 +277,17 @@ const EstoquePage = () => {
           onSave={(product) => {
             console.log('Produto cadastrado:', product);
             setShowRegistrationForm(false);
+          }}
+        />
+      )}
+
+      {showStockLaunchForm && (
+        <StockLaunchForm
+          open={showStockLaunchForm}
+          onClose={() => setShowStockLaunchForm(false)}
+          onSave={(stockData) => {
+            console.log('Estoque lançado:', stockData);
+            setShowStockLaunchForm(false);
           }}
         />
       )}

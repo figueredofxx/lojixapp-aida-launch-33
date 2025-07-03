@@ -1,11 +1,11 @@
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { X, Calculator } from "lucide-react";
+import { Calculator } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { 
   Select,
   SelectContent,
@@ -13,6 +13,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalTitle,
+} from "@/components/ui/modal";
 
 interface ProductRegistrationFormProps {
   onClose: () => void;
@@ -20,11 +28,9 @@ interface ProductRegistrationFormProps {
 }
 
 type ControlType = "quantidade" | "identificador";
-type IdentifierType = "IMEI" | "SN" | "CODIGO_BARRAS" | "OUTRO";
 
 export function ProductRegistrationForm({ onClose, onSave }: ProductRegistrationFormProps) {
   const [controlType, setControlType] = useState<ControlType>("quantidade");
-  const [identifierType, setIdentifierType] = useState<IdentifierType>("IMEI");
   
   const [formData, setFormData] = useState({
     nome: "",
@@ -72,18 +78,15 @@ export function ProductRegistrationForm({ onClose, onSave }: ProductRegistration
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="font-cantarell text-2xl font-bold">
+    <Modal open={true} onOpenChange={(open) => !open && onClose()}>
+      <ModalContent className="max-w-4xl">
+        <ModalHeader>
+          <ModalTitle className="font-cantarell text-2xl font-bold">
             Cadastro de Produto
-          </CardTitle>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="h-4 w-4" />
-          </Button>
-        </CardHeader>
+          </ModalTitle>
+        </ModalHeader>
         
-        <CardContent className="space-y-6">
+        <ModalBody className="space-y-6">
           {/* Tipo de Controle */}
           <div className="space-y-2">
             <Label className="font-inter text-sm font-medium">Tipo de Controle</Label>
@@ -217,25 +220,24 @@ export function ProductRegistrationForm({ onClose, onSave }: ProductRegistration
               </div>
             </CardContent>
           </Card>
+        </ModalBody>
 
-          {/* Botões de Ação */}
-          <div className="flex flex-col sm:flex-row gap-2 pt-4">
-            <Button
-              variant="outline"
-              onClick={onClose}
-              className="font-inter"
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleSave}
-              className="bg-primary hover:bg-primary-hover font-inter"
-            >
-              Salvar Produto
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+        <ModalFooter>
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="font-inter"
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSave}
+            className="bg-primary hover:bg-primary-hover font-inter"
+          >
+            Salvar Produto
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 }

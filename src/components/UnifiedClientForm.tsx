@@ -1,501 +1,499 @@
-
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { User, Building, MapPin, Check, X } from "lucide-react";
-import { formatCPF, formatCNPJ, formatPhone, formatCEP, validateCPF, validateCNPJ, validateEmail } from "@/utils/formatters";
+import { User, Building2, MapPin } from "lucide-react";
 import { fetchAddressByCep } from "@/services/viaCepService";
+import { formatCPF, formatCNPJ, formatPhone, formatCEP, validateCPF, validateCNPJ, validateEmail } from "@/utils/formatters";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalTitle,
+  ModalDescription,
+} from "@/components/ui/modal";
 
-export interface ClienteCompleto {
-  id?: number;
-  tipo: "PF" | "PJ";
-  // Dados PF
-  nome?: string;
-  cpf?: string;
+interface Cliente {
+  id?: string;
+  tipo: 'PF' | 'PJ';
+  nome: string;
+  cpfCnpj: string;
+  telefone: string;
+  email: string;
   dataNascimento?: string;
-  // Dados PJ
-  razaoSocial?: string;
   nomeFantasia?: string;
-  cnpj?: string;
   inscricaoEstadual?: string;
   nomeContato?: string;
-  // Dados comuns
-  telefone?: string;
-  email?: string;
-  // Endereço
-  cep: string;
-  logradouro: string;
-  numero: string;
-  complemento?: string;
-  bairro: string;
-  cidade: string;
-  estado: string;
+  endereco: {
+    cep: string;
+    logradouro: string;
+    numero: string;
+    complemento: string;
+    bairro: string;
+    cidade: string;
+    estado: string;
+  };
 }
 
 interface UnifiedClientFormProps {
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
-  onClientSave: (client: ClienteCompleto) => void;
-  existingClients?: ClienteCompleto[];
-  initialData?: Partial<ClienteCompleto>;
+  onSave: (client: Cliente) => void;
+  editingClient?: Cliente | null;
 }
 
-export function UnifiedClientForm({ 
-  isOpen, 
-  onClose, 
-  onClientSave, 
-  existingClients = [],
-  initialData = {} 
-}: UnifiedClientFormProps) {
-  const [clientType, setClientType] = useState<"PF" | "PJ">("PF");
-  const [isSearchingCep, setIsSearchingCep] = useState(false);
-  const [formData, setFormData] = useState<Partial<ClienteCompleto>>({
-    tipo: "PF",
-    cep: "",
-    logradouro: "",
-    numero: "",
-    complemento: "",
-    bairro: "",
-    cidade: "",
-    estado: "",
-    ...initialData
+export function UnifiedClientForm({ open, onClose, onSave, editingClient }: UnifiedClientFormProps) {
+  const [clientType, setClientType] = useState<'PF' | 'PJ'>('PF');
+  const [isLoadingCep, setIsLoadingCep] = useState(false);
+  
+  const [formData, setFormData] = useState<Cliente>({
+    tipo: 'PF',
+    nome: '',
+    cpfCnpj: '',
+    telefone: '',
+    email: '',
+    dataNascimento: '',
+    nomeFantasia: '',
+    inscricaoEstadual: '',
+    nomeContato: '',
+    endereco: {
+      cep: '',
+      logradouro: '',
+      numero: '',
+      complemento: '',
+      bairro: '',
+      cidade: '',
+      estado: ''
+    }
   });
 
   useEffect(() => {
-    if (initialData.tipo) {
-      setClientType(initialData.tipo);
+    if (editingClient) {
+      setClientType(editingClient.tipo);
+      setFormData(editingClient);
+    } else {
+      // Reset form when opening for a new client
+      setClientType('PF');
+      setFormData({
+        tipo: 'PF',
+        nome: '',
+        cpfCnpj: '',
+        telefone: '',
+        email: '',
+        dataNascimento: '',
+        nomeFantasia: '',
+        inscricaoEstadual: '',
+        nomeContato: '',
+        endereco: {
+          cep: '',
+          logradouro: '',
+          numero: '',
+          complemento: '',
+          bairro: '',
+          cidade: '',
+          estado: ''
+        }
+      });
     }
-  }, [initialData]);
+  }, [editingClient]);
 
-  const handleInputChange = (field: keyof ClienteCompleto, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => {
+      // Split the field string into parts to handle nested objects
+      const parts = field.split('.');
+      if (parts.length === 1) {
+        // Simple field
+        return { ...prev, [field]: value };
+      } else {
+        // Nested field (e.g., 'endereco.cep')
+        const [parent, child] = parts;
+        return {
+          ...prev,
+          [parent]: {
+            ...prev[parent],
+            [child]: value
+          }
+        };
+      }
+    });
   };
 
   const handleCepChange = async (cep: string) => {
-    const formatted = formatCEP(cep);
-    handleInputChange("cep", formatted);
+    const formattedCep = formatCEP(cep);
+    handleInputChange('endereco.cep', formattedCep);
 
-    const cleanCep = cep.replace(/\D/g, '');
-    if (cleanCep.length === 8) {
-      setIsSearchingCep(true);
-      const addressData = await fetchAddressByCep(cleanCep);
-      
-      if (addressData) {
-        setFormData(prev => ({
-          ...prev,
-          logradouro: addressData.logradouro,
-          bairro: addressData.bairro,
-          cidade: addressData.localidade,
-          estado: addressData.uf
-        }));
+    if (formattedCep.replace(/\D/g, '').length === 8) {
+      setIsLoadingCep(true);
+      try {
+        const addressData = await fetchAddressByCep(formattedCep);
+        if (addressData) {
+          setFormData(prev => ({
+            ...prev,
+            endereco: {
+              ...prev.endereco,
+              cep: formattedCep,
+              logradouro: addressData.logradouro,
+              bairro: addressData.bairro,
+              cidade: addressData.localidade,
+              estado: addressData.uf
+            }
+          }));
+        }
+      } catch (error) {
+        console.error('Erro ao buscar CEP:', error);
+      } finally {
+        setIsLoadingCep(false);
       }
-      setIsSearchingCep(false);
     }
-  };
-
-  const validateForm = (): string | null => {
-    if (clientType === "PF") {
-      if (!formData.nome) return "Nome é obrigatório";
-      if (!formData.cpf) return "CPF é obrigatório";
-      if (!validateCPF(formData.cpf)) return "CPF inválido";
-    } else {
-      if (!formData.razaoSocial) return "Razão Social é obrigatória";
-      if (!formData.cnpj) return "CNPJ é obrigatório";
-      if (!validateCNPJ(formData.cnpj)) return "CNPJ inválido";
-    }
-
-    if (!formData.cep) return "CEP é obrigatório";
-    if (!formData.logradouro) return "Logradouro é obrigatório";
-    if (!formData.numero) return "Número é obrigatório";
-    if (!formData.bairro) return "Bairro é obrigatório";
-    if (!formData.cidade) return "Cidade é obrigatória";
-    if (!formData.estado) return "Estado é obrigatório";
-
-    if (formData.email && !validateEmail(formData.email)) {
-      return "Email inválido";
-    }
-
-    return null;
   };
 
   const handleSave = () => {
-    const error = validateForm();
-    if (error) {
-      alert(error);
+    // Validações básicas
+    if (!formData.nome.trim()) {
+      alert('Nome é obrigatório');
       return;
     }
 
-    const newClient: ClienteCompleto = {
-      id: Date.now(),
-      tipo: clientType,
+    if (!formData.cpfCnpj.trim()) {
+      alert(clientType === 'PF' ? 'CPF é obrigatório' : 'CNPJ é obrigatório');
+      return;
+    }
+
+    if (clientType === 'PF' && !validateCPF(formData.cpfCnpj)) {
+      alert('CPF inválido');
+      return;
+    }
+
+    if (clientType === 'PJ' && !validateCNPJ(formData.cpfCnpj)) {
+      alert('CNPJ inválido');
+      return;
+    }
+
+    if (formData.email && !validateEmail(formData.email)) {
+      alert('E-mail inválido');
+      return;
+    }
+
+    if (!formData.endereco.cep.trim()) {
+      alert('CEP é obrigatório');
+      return;
+    }
+
+    const clientData = {
       ...formData,
-      cep: formData.cep || "",
-      logradouro: formData.logradouro || "",
-      numero: formData.numero || "",
-      bairro: formData.bairro || "",
-      cidade: formData.cidade || "",
-      estado: formData.estado || ""
+      tipo: clientType,
+      id: editingClient?.id || Date.now().toString()
     };
 
-    onClientSave(newClient);
-    resetForm();
+    onSave(clientData);
+  };
+
+  const handleClose = () => {
     onClose();
   };
 
-  const resetForm = () => {
-    setFormData({
-      tipo: "PF",
-      cep: "",
-      logradouro: "",
-      numero: "",
-      complemento: "",
-      bairro: "",
-      cidade: "",
-      estado: ""
-    });
-    setClientType("PF");
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="font-cantarell text-xl flex items-center">
-            <User className="mr-2 h-5 w-5 text-primary" />
-            Cadastro de Cliente
-          </DialogTitle>
-        </DialogHeader>
+    <Modal open={open} onOpenChange={(open) => !open && handleClose()}>
+      <ModalContent className="max-w-5xl max-h-[95vh]">
+        <ModalHeader>
+          <ModalTitle className="font-cantarell text-2xl font-bold flex items-center">
+            <User className="h-6 w-6 mr-2 text-primary" />
+            {editingClient ? 'Editar Cliente' : 'Cadastrar Cliente'}
+          </ModalTitle>
+          <ModalDescription className="font-inter">
+            Cadastre clientes pessoa física ou jurídica com endereço completo
+          </ModalDescription>
+        </ModalHeader>
 
-        <div className="space-y-6">
+        <ModalBody className="space-y-6">
           {/* Tipo de Cliente */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-cantarell text-lg">Tipo de Cliente</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <RadioGroup
-                value={clientType}
-                onValueChange={(value: "PF" | "PJ") => {
-                  setClientType(value);
-                  setFormData(prev => ({ ...prev, tipo: value }));
-                }}
-                className="flex gap-6"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="PF" id="pf" />
-                  <Label htmlFor="pf" className="font-inter flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    Pessoa Física (PF)
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="PJ" id="pj" />
-                  <Label htmlFor="pj" className="font-inter flex items-center gap-2">
-                    <Building className="h-4 w-4" />
-                    Pessoa Jurídica (PJ)
-                  </Label>
-                </div>
-              </RadioGroup>
-            </CardContent>
-          </Card>
+          <div className="space-y-3">
+            <Label className="font-inter text-sm font-medium">Tipo de Cliente</Label>
+            <RadioGroup 
+              value={clientType} 
+              onValueChange={(value: 'PF' | 'PJ') => {
+                setClientType(value);
+                setFormData(prev => ({ ...prev, tipo: value, cpfCnpj: '' }));
+              }}
+              className="flex gap-6"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="PF" id="pf" />
+                <Label htmlFor="pf" className="font-inter flex items-center cursor-pointer">
+                  <User className="h-4 w-4 mr-2" />
+                  Pessoa Física (PF)
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="PJ" id="pj" />
+                <Label htmlFor="pj" className="font-inter flex items-center cursor-pointer">
+                  <Building2 className="h-4 w-4 mr-2" />
+                  Pessoa Jurídica (PJ)
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
 
-          {/* Dados do Cliente */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-cantarell text-lg">
-                Dados {clientType === "PF" ? "Pessoais" : "da Empresa"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {clientType === "PF" ? (
-                <>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Coluna Esquerda - Dados do Cliente */}
+            <div className="space-y-4">
+              <h3 className="font-cantarell font-semibold text-lg border-b pb-2 flex items-center">
+                {clientType === 'PF' ? <User className="h-5 w-5 mr-2" /> : <Building2 className="h-5 w-5 mr-2" />}
+                Dados {clientType === 'PF' ? 'Pessoais' : 'da Empresa'}
+              </h3>
+
+              {/* Campos PF */}
+              {clientType === 'PF' && (
+                <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="nome" className="font-inter text-sm font-medium">
-                      Nome Completo *
-                    </Label>
+                    <Label className="font-inter text-sm font-medium">Nome Completo *</Label>
                     <Input
-                      id="nome"
-                      value={formData.nome || ""}
-                      onChange={(e) => handleInputChange("nome", e.target.value)}
-                      placeholder="Digite o nome completo"
+                      value={formData.nome}
+                      onChange={(e) => handleInputChange('nome', e.target.value)}
+                      placeholder="Nome completo"
                       className="font-inter"
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="cpf" className="font-inter text-sm font-medium">
-                        CPF *
-                      </Label>
+                      <Label className="font-inter text-sm font-medium">CPF *</Label>
                       <Input
-                        id="cpf"
-                        value={formData.cpf || ""}
-                        onChange={(e) => handleInputChange("cpf", formatCPF(e.target.value))}
+                        value={formData.cpfCnpj}
+                        onChange={(e) => handleInputChange('cpfCnpj', formatCPF(e.target.value))}
                         placeholder="000.000.000-00"
+                        className="font-inter"
                         maxLength={14}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="font-inter text-sm font-medium">Data de Nascimento</Label>
+                      <Input
+                        type="date"
+                        value={formData.dataNascimento}
+                        onChange={(e) => handleInputChange('dataNascimento', e.target.value)}
+                        className="font-inter"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="font-inter text-sm font-medium">Telefone</Label>
+                      <Input
+                        value={formData.telefone}
+                        onChange={(e) => handleInputChange('telefone', formatPhone(e.target.value))}
+                        placeholder="(00) 00000-0000"
                         className="font-inter"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="dataNascimento" className="font-inter text-sm font-medium">
-                        Data de Nascimento
-                      </Label>
+                      <Label className="font-inter text-sm font-medium">E-mail</Label>
                       <Input
-                        id="dataNascimento"
-                        type="date"
-                        value={formData.dataNascimento || ""}
-                        onChange={(e) => handleInputChange("dataNascimento", e.target.value)}
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        placeholder="email@exemplo.com"
                         className="font-inter"
                       />
                     </div>
                   </div>
-                </>
-              ) : (
-                <>
+                </div>
+              )}
+
+              {/* Campos PJ */}
+              {clientType === 'PJ' && (
+                <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="razaoSocial" className="font-inter text-sm font-medium">
-                      Razão Social *
-                    </Label>
+                    <Label className="font-inter text-sm font-medium">Razão Social *</Label>
                     <Input
-                      id="razaoSocial"
-                      value={formData.razaoSocial || ""}
-                      onChange={(e) => handleInputChange("razaoSocial", e.target.value)}
-                      placeholder="Digite a razão social"
+                      value={formData.nome}
+                      onChange={(e) => handleInputChange('nome', e.target.value)}
+                      placeholder="Razão social da empresa"
                       className="font-inter"
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="nomeFantasia" className="font-inter text-sm font-medium">
-                        Nome Fantasia
-                      </Label>
+                      <Label className="font-inter text-sm font-medium">CNPJ *</Label>
                       <Input
-                        id="nomeFantasia"
-                        value={formData.nomeFantasia || ""}
-                        onChange={(e) => handleInputChange("nomeFantasia", e.target.value)}
+                        value={formData.cpfCnpj}
+                        onChange={(e) => handleInputChange('cpfCnpj', formatCNPJ(e.target.value))}
+                        placeholder="00.000.000/0000-00"
+                        className="font-inter"
+                        maxLength={18}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="font-inter text-sm font-medium">Nome Fantasia</Label>
+                      <Input
+                        value={formData.nomeFantasia}
+                        onChange={(e) => handleInputChange('nomeFantasia', e.target.value)}
                         placeholder="Nome fantasia"
                         className="font-inter"
                       />
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="font-inter text-sm font-medium">Inscrição Estadual</Label>
+                    <Input
+                      value={formData.inscricaoEstadual}
+                      onChange={(e) => handleInputChange('inscricaoEstadual', e.target.value)}
+                      placeholder="Inscrição estadual"
+                      className="font-inter"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="font-inter text-sm font-medium">Telefone Comercial</Label>
+                      <Input
+                        value={formData.telefone}
+                        onChange={(e) => handleInputChange('telefone', formatPhone(e.target.value))}
+                        placeholder="(00) 00000-0000"
+                        className="font-inter"
+                      />
+                    </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="nomeContato" className="font-inter text-sm font-medium">
-                        Nome do Contato
-                      </Label>
+                      <Label className="font-inter text-sm font-medium">E-mail Comercial</Label>
                       <Input
-                        id="nomeContato"
-                        value={formData.nomeContato || ""}
-                        onChange={(e) => handleInputChange("nomeContato", e.target.value)}
-                        placeholder="Nome do responsável"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        placeholder="email@empresa.com"
                         className="font-inter"
                       />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="cnpj" className="font-inter text-sm font-medium">
-                        CNPJ *
-                      </Label>
-                      <Input
-                        id="cnpj"
-                        value={formData.cnpj || ""}
-                        onChange={(e) => handleInputChange("cnpj", formatCNPJ(e.target.value))}
-                        placeholder="00.000.000/0000-00"
-                        maxLength={18}
-                        className="font-inter"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="inscricaoEstadual" className="font-inter text-sm font-medium">
-                        Inscrição Estadual
-                      </Label>
-                      <Input
-                        id="inscricaoEstadual"
-                        value={formData.inscricaoEstadual || ""}
-                        onChange={(e) => handleInputChange("inscricaoEstadual", e.target.value)}
-                        placeholder="Inscrição estadual"
-                        className="font-inter"
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label className="font-inter text-sm font-medium">Nome do Contato</Label>
+                    <Input
+                      value={formData.nomeContato}
+                      onChange={(e) => handleInputChange('nomeContato', e.target.value)}
+                      placeholder="Nome da pessoa de contato"
+                      className="font-inter"
+                    />
                   </div>
-                </>
+                </div>
               )}
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="telefone" className="font-inter text-sm font-medium">
-                    Telefone {clientType === "PJ" ? "Comercial" : ""}
-                  </Label>
-                  <Input
-                    id="telefone"
-                    value={formData.telefone || ""}
-                    onChange={(e) => handleInputChange("telefone", formatPhone(e.target.value))}
-                    placeholder="(11) 99999-9999"
-                    className="font-inter"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="font-inter text-sm font-medium">
-                    Email {clientType === "PJ" ? "Comercial" : ""}
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email || ""}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    placeholder="cliente@email.com"
-                    className="font-inter"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Endereço */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-cantarell text-lg flex items-center">
-                <MapPin className="mr-2 h-4 w-4" />
+            {/* Coluna Direita - Endereço */}
+            <div className="space-y-4">
+              <h3 className="font-cantarell font-semibold text-lg border-b pb-2 flex items-center">
+                <MapPin className="h-5 w-5 mr-2" />
                 Endereço
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              </h3>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="cep" className="font-inter text-sm font-medium">
-                    CEP *
-                  </Label>
+                  <Label className="font-inter text-sm font-medium">CEP *</Label>
                   <Input
-                    id="cep"
-                    value={formData.cep || ""}
+                    value={formData.endereco.cep}
                     onChange={(e) => handleCepChange(e.target.value)}
                     placeholder="00000-000"
-                    maxLength={9}
                     className="font-inter"
-                    disabled={isSearchingCep}
+                    maxLength={9}
+                    disabled={isLoadingCep}
                   />
-                  {isSearchingCep && (
-                    <p className="font-inter text-xs text-muted-foreground">
-                      Buscando endereço...
-                    </p>
+                  {isLoadingCep && (
+                    <p className="font-inter text-xs text-muted-foreground">Buscando endereço...</p>
                   )}
                 </div>
 
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="logradouro" className="font-inter text-sm font-medium">
-                    Logradouro *
-                  </Label>
-                  <Input
-                    id="logradouro"
-                    value={formData.logradouro || ""}
-                    onChange={(e) => handleInputChange("logradouro", e.target.value)}
-                    placeholder="Rua, Avenida, etc."
-                    className="font-inter"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="numero" className="font-inter text-sm font-medium">
-                    Número *
-                  </Label>
+                  <Label className="font-inter text-sm font-medium">Número *</Label>
                   <Input
-                    id="numero"
-                    value={formData.numero || ""}
-                    onChange={(e) => handleInputChange("numero", e.target.value)}
+                    value={formData.endereco.numero}
+                    onChange={(e) => handleInputChange('endereco.numero', e.target.value)}
                     placeholder="123"
                     className="font-inter"
                   />
                 </div>
-
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="complemento" className="font-inter text-sm font-medium">
-                    Complemento
-                  </Label>
-                  <Input
-                    id="complemento"
-                    value={formData.complemento || ""}
-                    onChange={(e) => handleInputChange("complemento", e.target.value)}
-                    placeholder="Apartamento, Bloco, etc."
-                    className="font-inter"
-                  />
-                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="bairro" className="font-inter text-sm font-medium">
-                    Bairro *
-                  </Label>
-                  <Input
-                    id="bairro"
-                    value={formData.bairro || ""}
-                    onChange={(e) => handleInputChange("bairro", e.target.value)}
-                    placeholder="Bairro"
-                    className="font-inter"
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label className="font-inter text-sm font-medium">Logradouro *</Label>
+                <Input
+                  value={formData.endereco.logradouro}
+                  onChange={(e) => handleInputChange('endereco.logradouro', e.target.value)}
+                  placeholder="Rua, Avenida, etc."
+                  className="font-inter"
+                />
+              </div>
 
+              <div className="space-y-2">
+                <Label className="font-inter text-sm font-medium">Complemento</Label>
+                <Input
+                  value={formData.endereco.complemento}
+                  onChange={(e) => handleInputChange('endereco.complemento', e.target.value)}
+                  placeholder="Apartamento, Casa, etc."
+                  className="font-inter"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="font-inter text-sm font-medium">Bairro *</Label>
+                <Input
+                  value={formData.endereco.bairro}
+                  onChange={(e) => handleInputChange('endereco.bairro', e.target.value)}
+                  placeholder="Bairro"
+                  className="font-inter"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="cidade" className="font-inter text-sm font-medium">
-                    Cidade *
-                  </Label>
+                  <Label className="font-inter text-sm font-medium">Cidade *</Label>
                   <Input
-                    id="cidade"
-                    value={formData.cidade || ""}
-                    onChange={(e) => handleInputChange("cidade", e.target.value)}
+                    value={formData.endereco.cidade}
+                    onChange={(e) => handleInputChange('endereco.cidade', e.target.value)}
                     placeholder="Cidade"
                     className="font-inter"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="estado" className="font-inter text-sm font-medium">
-                    Estado (UF) *
-                  </Label>
+                  <Label className="font-inter text-sm font-medium">Estado (UF) *</Label>
                   <Input
-                    id="estado"
-                    value={formData.estado || ""}
-                    onChange={(e) => handleInputChange("estado", e.target.value.toUpperCase())}
+                    value={formData.endereco.estado}
+                    onChange={(e) => handleInputChange('endereco.estado', e.target.value.toUpperCase())}
                     placeholder="SP"
-                    maxLength={2}
                     className="font-inter"
+                    maxLength={2}
                   />
                 </div>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Botões */}
-          <div className="flex gap-2 pt-4">
-            <Button 
-              variant="outline" 
-              onClick={onClose}
-              className="flex-1 font-inter"
-            >
-              <X className="mr-2 h-4 w-4" />
-              Cancelar
-            </Button>
-            <Button 
-              onClick={handleSave}
-              className="flex-1 font-inter bg-primary hover:bg-primary-hover"
-            >
-              <Check className="mr-2 h-4 w-4" />
-              Salvar Cliente
-            </Button>
+            </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button
+            variant="outline"
+            onClick={handleClose}
+            className="font-inter"
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSave}
+            className="bg-primary hover:bg-primary-hover font-inter"
+          >
+            {editingClient ? 'Atualizar Cliente' : 'Cadastrar Cliente'}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 }
