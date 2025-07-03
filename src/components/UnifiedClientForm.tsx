@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,24 @@ import {
   ModalTitle,
   ModalDescription,
 } from "@/components/ui/modal";
+
+export interface ClienteCompleto {
+  id: number;
+  tipo: 'PF' | 'PJ';
+  nome?: string;
+  razaoSocial?: string;
+  nomeFantasia?: string;
+  cpf?: string;
+  cnpj?: string;
+  email?: string;
+  telefone?: string;
+  cep: string;
+  logradouro: string;
+  numero: string;
+  bairro: string;
+  cidade: string;
+  estado: string;
+}
 
 interface Cliente {
   id?: string;
@@ -41,11 +60,13 @@ interface Cliente {
 interface UnifiedClientFormProps {
   open: boolean;
   onClose: () => void;
-  onSave: (client: Cliente) => void;
+  onSave?: (client: Cliente) => void;
+  onClientSave?: (client: ClienteCompleto) => void;
   editingClient?: Cliente | null;
+  existingClients?: ClienteCompleto[];
 }
 
-export function UnifiedClientForm({ open, onClose, onSave, editingClient }: UnifiedClientFormProps) {
+export function UnifiedClientForm({ open, onClose, onSave, onClientSave, editingClient, existingClients }: UnifiedClientFormProps) {
   const [clientType, setClientType] = useState<'PF' | 'PJ'>('PF');
   const [isLoadingCep, setIsLoadingCep] = useState(false);
   
@@ -188,7 +209,25 @@ export function UnifiedClientForm({ open, onClose, onSave, editingClient }: Unif
       id: editingClient?.id || Date.now().toString()
     };
 
-    onSave(clientData);
+    // Convert to ClienteCompleto format if onClientSave is provided
+    if (onClientSave) {
+      const clienteCompleto: ClienteCompleto = {
+        id: Date.now(),
+        tipo: clientType,
+        ...(clientType === 'PF' ? { nome: formData.nome, cpf: formData.cpfCnpj } : { razaoSocial: formData.nome, nomeFantasia: formData.nomeFantasia, cnpj: formData.cpfCnpj }),
+        email: formData.email,
+        telefone: formData.telefone,
+        cep: formData.endereco.cep,
+        logradouro: formData.endereco.logradouro,
+        numero: formData.endereco.numero,
+        bairro: formData.endereco.bairro,
+        cidade: formData.endereco.cidade,
+        estado: formData.endereco.estado
+      };
+      onClientSave(clienteCompleto);
+    } else if (onSave) {
+      onSave(clientData);
+    }
   };
 
   const handleClose = () => {

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -519,7 +518,7 @@ const PDVPage = () => {
 
       {/* Modal de Cliente */}
       <UnifiedClientForm
-        isOpen={clientDialogOpen}
+        open={clientDialogOpen}
         onClose={() => setClientDialogOpen(false)}
         onClientSave={handleClientSave}
         existingClients={clientesExistentes}

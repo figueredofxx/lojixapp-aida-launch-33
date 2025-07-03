@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -329,7 +328,7 @@ const ClientesPage = () => {
 
       {/* Modal de Cliente */}
       <UnifiedClientForm
-        isOpen={clientFormOpen}
+        open={clientFormOpen}
         onClose={() => setClientFormOpen(false)}
         onClientSave={handleClientSave}
         existingClients={clientes}
