@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { BarChart3, TrendingUp, Calendar, Download, Filter, Search, Eye, DollarSign, ShoppingCart, Users, Package } from "lucide-react";
+import { BarChart3, TrendingUp, Calendar, Download, Filter, Search, Eye, DollarSign, ShoppingCart, Users, Package, FileText } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Table,
@@ -15,9 +15,9 @@ import {
 
 const RelatoriosPage = () => {
   const salesData = [
-    { periodo: "Janeiro 2024", vendas: "R$ 125.480,00", pedidos: 340, ticketMedio: "R$ 369,00", crescimento: "+12%" },
-    { periodo: "Fevereiro 2024", vendas: "R$ 138.920,00", pedidos: 385, ticketMedio: "R$ 361,00", crescimento: "+15%" },
-    { periodo: "Março 2024", vendas: "R$ 142.350,00", pedidos: 398, ticketMedio: "R$ 358,00", crescimento: "+18%" },
+    { periodo: "Janeiro 2025", vendas: "R$ 125.480,00", pedidos: 340, ticketMedio: "R$ 369,00", crescimento: "+12%" },
+    { periodo: "Fevereiro 2025", vendas: "R$ 138.920,00", pedidos: 385, ticketMedio: "R$ 361,00", crescimento: "+15%" },
+    { periodo: "Março 2025", vendas: "R$ 142.350,00", pedidos: 398, ticketMedio: "R$ 358,00", crescimento: "+18%" },
   ];
 
   const topProducts = [
@@ -25,6 +25,12 @@ const RelatoriosPage = () => {
     { produto: "Samsung Galaxy S24", categoria: "Smartphones", vendas: 76, receita: "R$ 326.740,00", margem: "24%" },
     { produto: "AirPods Pro 2ª Gen", categoria: "Acessórios", vendas: 124, receita: "R$ 359.476,00", margem: "35%" },
   ];
+
+  const handleDownloadReport = (reportType: string) => {
+    console.log(`Gerando relatório: ${reportType}`);
+    // Aqui seria implementada a lógica real de geração do relatório
+    alert(`Relatório de ${reportType} será gerado em breve!`);
+  };
 
   return (
     <div className="flex-1 space-y-6 p-4 pt-6">
@@ -35,7 +41,7 @@ const RelatoriosPage = () => {
             Relatórios
           </h1>
           <p className="font-inter text-sm text-muted-foreground">
-            Análise completa do desempenho do seu negócio
+            Análise completa do desempenho do seu negócio com relatórios detalhados
           </p>
         </div>
         <div className="flex gap-2">
@@ -45,14 +51,14 @@ const RelatoriosPage = () => {
           </Button>
           <Button className="bg-primary hover:bg-primary-hover font-inter">
             <Download className="mr-2 h-4 w-4" />
-            Exportar
+            Exportar Tudo
           </Button>
         </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Cards with Report Generation */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-inter text-sm font-medium text-muted-foreground">
               Receita Total
@@ -61,13 +67,22 @@ const RelatoriosPage = () => {
           </CardHeader>
           <CardContent>
             <div className="font-cantarell text-2xl font-bold text-foreground">R$ 842.750,00</div>
-            <p className="text-xs text-green-600 font-inter mt-1">
+            <p className="text-xs text-green-600 font-inter mt-1 mb-3">
               +15% em relação ao período anterior
             </p>
+            <Button
+              size="sm"
+              variant="outline"
+              className="w-full font-inter"
+              onClick={() => handleDownloadReport("Receita Detalhada")}
+            >
+              <FileText className="mr-2 h-3 w-3" />
+              Relatório Detalhado
+            </Button>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-inter text-sm font-medium text-muted-foreground">
               Total de Vendas
@@ -76,39 +91,66 @@ const RelatoriosPage = () => {
           </CardHeader>
           <CardContent>
             <div className="font-cantarell text-2xl font-bold text-foreground">1,123</div>
-            <p className="text-xs text-green-600 font-inter mt-1">
+            <p className="text-xs text-green-600 font-inter mt-1 mb-3">
               +8% este mês
             </p>
+            <Button
+              size="sm"
+              variant="outline"
+              className="w-full font-inter"
+              onClick={() => handleDownloadReport("Vendas Detalhadas")}
+            >
+              <FileText className="mr-2 h-3 w-3" />
+              Relatório Detalhado
+            </Button>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-inter text-sm font-medium text-muted-foreground">
-              Novos Clientes
+              Clientes Ativos
             </CardTitle>
             <Users className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="font-cantarell text-2xl font-bold text-foreground">287</div>
-            <p className="text-xs text-green-600 font-inter mt-1">
+            <p className="text-xs text-green-600 font-inter mt-1 mb-3">
               +22% este mês
             </p>
+            <Button
+              size="sm"
+              variant="outline"
+              className="w-full font-inter"
+              onClick={() => handleDownloadReport("Clientes Detalhados")}
+            >
+              <FileText className="mr-2 h-3 w-3" />
+              Relatório Detalhado
+            </Button>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-inter text-sm font-medium text-muted-foreground">
-              Produtos Vendidos
+              Estoque Atual
             </CardTitle>
             <Package className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="font-cantarell text-2xl font-bold text-foreground">2,847</div>
-            <p className="text-xs text-green-600 font-inter mt-1">
+            <p className="text-xs text-green-600 font-inter mt-1 mb-3">
               +12% este mês
             </p>
+            <Button
+              size="sm"
+              variant="outline"
+              className="w-full font-inter"
+              onClick={() => handleDownloadReport("Estoque Detalhado")}
+            >
+              <FileText className="mr-2 h-3 w-3" />
+              Relatório Detalhado
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -200,10 +242,21 @@ const RelatoriosPage = () => {
                 <BarChart3 className="h-5 w-5 text-primary mr-2" />
                 Performance de Vendas
               </CardTitle>
-              <Button variant="outline" size="sm" className="font-inter">
-                <Eye className="mr-2 h-4 w-4" />
-                Ver Gráfico
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" className="font-inter">
+                  <Eye className="mr-2 h-4 w-4" />
+                  Ver Gráfico
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="font-inter"
+                  onClick={() => handleDownloadReport("Performance de Vendas")}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Exportar
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
@@ -238,10 +291,21 @@ const RelatoriosPage = () => {
                 <TrendingUp className="h-5 w-5 text-primary mr-2" />
                 Produtos Mais Vendidos
               </CardTitle>
-              <Button variant="outline" size="sm" className="font-inter">
-                <Download className="mr-2 h-4 w-4" />
-                Exportar
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" className="font-inter">
+                  <Eye className="mr-2 h-4 w-4" />
+                  Ver Todos
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="font-inter"
+                  onClick={() => handleDownloadReport("Produtos Mais Vendidos")}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Exportar
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
@@ -270,57 +334,6 @@ const RelatoriosPage = () => {
                 ))}
               </TableBody>
             </Table>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <CardContent className="flex items-center p-6">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
-              <BarChart3 className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-cantarell font-semibold">Vendas</h3>
-              <p className="font-inter text-sm text-muted-foreground">Relatório de vendas</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <CardContent className="flex items-center p-6">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
-              <Package className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-cantarell font-semibold">Estoque</h3>
-              <p className="font-inter text-sm text-muted-foreground">Relatório de estoque</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <CardContent className="flex items-center p-6">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
-              <Users className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-cantarell font-semibold">Clientes</h3>
-              <p className="font-inter text-sm text-muted-foreground">Relatório de clientes</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <CardContent className="flex items-center p-6">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
-              <DollarSign className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-cantarell font-semibold">Financeiro</h3>
-              <p className="font-inter text-sm text-muted-foreground">Relatório financeiro</p>
-            </div>
           </CardContent>
         </Card>
       </div>

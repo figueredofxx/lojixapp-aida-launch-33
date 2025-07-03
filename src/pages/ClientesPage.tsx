@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Filter, Eye, Edit, Trash2, Users, UserPlus, Phone, Mail, MapPin, Calendar } from "lucide-react";
+import { Plus, Search, Filter, Eye, Edit, Trash2, Users, UserPlus, Phone, Mail, MapPin, Calendar, Building } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -13,70 +13,105 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { UnifiedClientForm, ClienteCompleto } from "@/components/UnifiedClientForm";
 
 const ClientesPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
-
-  const clientes = [
+  const [clientFormOpen, setClientFormOpen] = useState(false);
+  const [clientes, setClientes] = useState<ClienteCompleto[]>([
     {
       id: 1,
+      tipo: "PF",
       nome: "João Silva",
+      cpf: "123.456.789-00",
       email: "joao.silva@email.com",
       telefone: "(11) 99999-9999",
-      endereco: "Rua das Flores, 123 - São Paulo/SP",
-      totalCompras: "R$ 15.480,00",
-      ultimaCompra: "15/12/2024",
-      status: "Ativo",
-      categoria: "VIP"
+      cep: "01310-100",
+      logradouro: "Av. Paulista",
+      numero: "1000",
+      bairro: "Bela Vista",
+      cidade: "São Paulo",
+      estado: "SP"
     },
     {
       id: 2,
+      tipo: "PF",
       nome: "Maria Santos",
+      cpf: "987.654.321-00",
       email: "maria.santos@email.com",
       telefone: "(11) 88888-8888",
-      endereco: "Av. Paulista, 456 - São Paulo/SP",
-      totalCompras: "R$ 8.920,00",
-      ultimaCompra: "12/12/2024",
-      status: "Ativo",
-      categoria: "Regular"
+      cep: "04038-001",
+      logradouro: "Rua Augusta",
+      numero: "500",
+      bairro: "Consolação",
+      cidade: "São Paulo",
+      estado: "SP"
     },
     {
       id: 3,
-      nome: "Pedro Costa",
-      email: "pedro.costa@email.com",
+      tipo: "PJ",
+      razaoSocial: "Tech Solutions Ltda",
+      nomeFantasia: "TechSol",
+      cnpj: "12.345.678/0001-90",
+      email: "contato@techsol.com.br",
       telefone: "(11) 77777-7777",
-      endereco: "Rua Augusta, 789 - São Paulo/SP",
-      totalCompras: "R$ 3.250,00",
-      ultimaCompra: "10/12/2024",
-      status: "Ativo",
-      categoria: "Regular"
+      cep: "04567-890",
+      logradouro: "Rua Oscar Freire",
+      numero: "321",
+      bairro: "Jardins",
+      cidade: "São Paulo",
+      estado: "SP"
     },
     {
       id: 4,
-      nome: "Ana Oliveira",
-      email: "ana.oliveira@email.com",
+      tipo: "PJ",
+      razaoSocial: "Comercial ABC S.A.",
+      nomeFantasia: "ABC Comercial",
+      cnpj: "98.765.432/0001-10",
+      email: "vendas@abccomercial.com",
       telefone: "(11) 66666-6666",
-      endereco: "Rua Oscar Freire, 321 - São Paulo/SP",
-      totalCompras: "R$ 22.150,00",
-      ultimaCompra: "08/12/2024",
-      status: "Inativo",
-      categoria: "VIP"
+      cep: "01234-567",
+      logradouro: "Rua da Consolação",
+      numero: "789",
+      bairro: "Centro",
+      cidade: "São Paulo",
+      estado: "SP"
     },
-  ];
+  ]);
 
-  const filteredClients = clientes.filter(cliente =>
-    cliente.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cliente.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cliente.telefone.includes(searchTerm)
-  );
+  const filteredClients = clientes.filter(cliente => {
+    const searchLower = searchTerm.toLowerCase();
+    const displayName = cliente.tipo === "PF" ? cliente.nome : cliente.razaoSocial;
+    const document = cliente.tipo === "PF" ? cliente.cpf : cliente.cnpj;
+    
+    return (
+      displayName?.toLowerCase().includes(searchLower) ||
+      cliente.email?.toLowerCase().includes(searchLower) ||
+      cliente.telefone?.includes(searchTerm) ||
+      document?.includes(searchTerm)
+    );
+  });
 
   const totalClientes = clientes.length;
-  const clientesAtivos = clientes.filter(c => c.status === "Ativo").length;
-  const clientesVIP = clientes.filter(c => c.categoria === "VIP").length;
-  const totalFaturamento = clientes.reduce((sum, cliente) => {
-    const valor = parseFloat(cliente.totalCompras.replace('R$ ', '').replace('.', '').replace(',', '.'));
-    return sum + valor;
-  }, 0);
+  const clientesAtivos = clientes.length; // Assumindo que todos estão ativos
+  const clientesPF = clientes.filter(c => c.tipo === "PF").length;
+  const clientesPJ = clientes.filter(c => c.tipo === "PJ").length;
+
+  const handleClientSave = (newClient: ClienteCompleto) => {
+    setClientes(prev => [...prev, newClient]);
+  };
+
+  const getClientDisplayName = (client: ClienteCompleto) => {
+    return client.tipo === "PF" ? client.nome : client.razaoSocial;
+  };
+
+  const getClientDocument = (client: ClienteCompleto) => {
+    return client.tipo === "PF" ? client.cpf : client.cnpj;
+  };
+
+  const getClientSecondaryName = (client: ClienteCompleto) => {
+    return client.tipo === "PJ" ? client.nomeFantasia : undefined;
+  };
 
   return (
     <div className="flex-1 space-y-6 p-4 pt-6">
@@ -87,7 +122,7 @@ const ClientesPage = () => {
             Clientes
           </h1>
           <p className="font-inter text-sm text-muted-foreground">
-            Gerencie todos os seus clientes e relacionamentos
+            Gerencie todos os seus clientes (PF e PJ) e relacionamentos
           </p>
         </div>
         <div className="flex gap-2">
@@ -95,7 +130,10 @@ const ClientesPage = () => {
             <Filter className="mr-2 h-4 w-4" />
             Filtros
           </Button>
-          <Button className="bg-primary hover:bg-primary-hover font-inter">
+          <Button 
+            className="bg-primary hover:bg-primary-hover font-inter"
+            onClick={() => setClientFormOpen(true)}
+          >
             <Plus className="mr-2 h-4 w-4" />
             Novo Cliente
           </Button>
@@ -114,7 +152,37 @@ const ClientesPage = () => {
           <CardContent>
             <div className="font-cantarell text-2xl font-bold text-foreground">{totalClientes}</div>
             <p className="text-xs text-green-600 font-inter mt-1">
-              +12 novos este mês
+              Todos os cadastros
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="font-inter text-sm font-medium text-muted-foreground">
+              Pessoas Físicas
+            </CardTitle>
+            <UserPlus className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="font-cantarell text-2xl font-bold text-foreground">{clientesPF}</div>
+            <p className="text-xs text-muted-foreground font-inter mt-1">
+              {Math.round((clientesPF / totalClientes) * 100)}% do total
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="font-inter text-sm font-medium text-muted-foreground">
+              Pessoas Jurídicas
+            </CardTitle>
+            <Building className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="font-cantarell text-2xl font-bold text-foreground">{clientesPJ}</div>
+            <p className="text-xs text-muted-foreground font-inter mt-1">
+              {Math.round((clientesPJ / totalClientes) * 100)}% do total
             </p>
           </CardContent>
         </Card>
@@ -124,50 +192,18 @@ const ClientesPage = () => {
             <CardTitle className="font-inter text-sm font-medium text-muted-foreground">
               Clientes Ativos
             </CardTitle>
-            <UserPlus className="h-4 w-4 text-primary" />
+            <Users className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="font-cantarell text-2xl font-bold text-foreground">{clientesAtivos}</div>
-            <p className="text-xs text-muted-foreground font-inter mt-1">
-              {Math.round((clientesAtivos / totalClientes) * 100)}% do total
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-inter text-sm font-medium text-muted-foreground">
-              Clientes VIP
-            </CardTitle>
-            <Users className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-cantarell text-2xl font-bold text-foreground">{clientesVIP}</div>
-            <p className="text-xs text-muted-foreground font-inter mt-1">
-              Alto valor de compra
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="font-inter text-sm font-medium text-muted-foreground">
-              Faturamento Total
-            </CardTitle>
-            <Users className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="font-cantarell text-2xl font-bold text-foreground">
-              R$ {totalFaturamento.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-            </div>
             <p className="text-xs text-green-600 font-inter mt-1">
-              +8% este mês
+              100% ativos
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Search and Filter */}
+      {/* Lista de Clientes */}
       <Card>
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -175,11 +211,11 @@ const ClientesPage = () => {
               Lista de Clientes
             </CardTitle>
             <div className="flex gap-2">
-              <div className="relative">
+              <div className="relative w-full md:w-96">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Buscar por nome, email ou telefone..."
-                  className="pl-9 font-inter"
+                  placeholder="Buscar por nome, documento, email ou telefone..."
+                  className="pl-9 font-inter text-base h-11"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -196,10 +232,10 @@ const ClientesPage = () => {
             <TableHeader>
               <TableRow>
                 <TableHead className="font-inter">Cliente</TableHead>
+                <TableHead className="font-inter">Documento</TableHead>
                 <TableHead className="font-inter">Contato</TableHead>
-                <TableHead className="font-inter">Total de Compras</TableHead>
-                <TableHead className="font-inter">Última Compra</TableHead>
-                <TableHead className="font-inter">Status</TableHead>
+                <TableHead className="font-inter">Endereço</TableHead>
+                <TableHead className="font-inter">Tipo</TableHead>
                 <TableHead className="font-inter">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -209,46 +245,57 @@ const ClientesPage = () => {
                   <TableCell>
                     <div>
                       <div className="font-inter font-medium flex items-center gap-2">
-                        {cliente.nome}
-                        {cliente.categoria === 'VIP' && (
-                          <Badge variant="secondary" className="font-inter text-xs">
-                            VIP
+                        {getClientDisplayName(cliente)}
+                        {cliente.tipo === 'PJ' && (
+                          <Badge variant="outline" className="font-inter text-xs">
+                            <Building className="h-3 w-3 mr-1" />
+                            PJ
                           </Badge>
                         )}
                       </div>
-                      <div className="font-inter text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                        <MapPin className="h-3 w-3" />
-                        {cliente.endereco.split(' - ')[1]}
-                      </div>
+                      {getClientSecondaryName(cliente) && (
+                        <div className="font-inter text-sm text-muted-foreground">
+                          {getClientSecondaryName(cliente)}
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="font-inter text-sm">
+                      {cliente.tipo}: {getClientDocument(cliente)}
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="space-y-1">
-                      <div className="font-inter text-sm flex items-center gap-1">
-                        <Mail className="h-3 w-3 text-muted-foreground" />
-                        {cliente.email}
-                      </div>
-                      <div className="font-inter text-sm flex items-center gap-1">
-                        <Phone className="h-3 w-3 text-muted-foreground" />
-                        {cliente.telefone}
-                      </div>
+                      {cliente.email && (
+                        <div className="font-inter text-sm flex items-center gap-1">
+                          <Mail className="h-3 w-3 text-muted-foreground" />
+                          {cliente.email}
+                        </div>
+                      )}
+                      {cliente.telefone && (
+                        <div className="font-inter text-sm flex items-center gap-1">
+                          <Phone className="h-3 w-3 text-muted-foreground" />
+                          {cliente.telefone}
+                        </div>
+                      )}
                     </div>
-                  </TableCell>
-                  <TableCell className="font-inter font-semibold">
-                    {cliente.totalCompras}
                   </TableCell>
                   <TableCell>
                     <div className="font-inter text-sm flex items-center gap-1">
-                      <Calendar className="h-3 w-3 text-muted-foreground" />
-                      {cliente.ultimaCompra}
+                      <MapPin className="h-3 w-3 text-muted-foreground" />
+                      {cliente.cidade}/{cliente.estado}
+                    </div>
+                    <div className="font-inter text-xs text-muted-foreground">
+                      {cliente.bairro}
                     </div>
                   </TableCell>
                   <TableCell>
                     <Badge 
-                      variant={cliente.status === 'Ativo' ? 'default' : 'secondary'}
+                      variant={cliente.tipo === 'PF' ? 'default' : 'secondary'}
                       className="font-inter text-xs"
                     >
-                      {cliente.status}
+                      {cliente.tipo === 'PF' ? 'Pessoa Física' : 'Pessoa Jurídica'}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -268,59 +315,25 @@ const ClientesPage = () => {
               ))}
             </TableBody>
           </Table>
+
+          {filteredClients.length === 0 && (
+            <div className="text-center py-8">
+              <Users className="mx-auto h-12 w-12 text-muted-foreground mb-2" />
+              <p className="font-inter text-muted-foreground">
+                {searchTerm ? 'Nenhum cliente encontrado' : 'Nenhum cliente cadastrado'}
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <CardContent className="flex items-center p-6">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
-              <Plus className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-cantarell font-semibold">Novo Cliente</h3>
-              <p className="font-inter text-sm text-muted-foreground">Cadastrar cliente</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <CardContent className="flex items-center p-6">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
-              <Search className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-cantarell font-semibold">Buscar Cliente</h3>
-              <p className="font-inter text-sm text-muted-foreground">Localizar cliente</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <CardContent className="flex items-center p-6">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
-              <Users className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-cantarell font-semibold">Clientes VIP</h3>
-              <p className="font-inter text-sm text-muted-foreground">Gerenciar VIPs</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <CardContent className="flex items-center p-6">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
-              <Eye className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-cantarell font-semibold">Relatórios</h3>
-              <p className="font-inter text-sm text-muted-foreground">Análise de clientes</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Modal de Cliente */}
+      <UnifiedClientForm
+        isOpen={clientFormOpen}
+        onClose={() => setClientFormOpen(false)}
+        onClientSave={handleClientSave}
+        existingClients={clientes}
+      />
     </div>
   );
 };

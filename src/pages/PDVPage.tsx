@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,17 +32,9 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useCart } from "@/hooks/useCart";
-import { ClientRegistrationForm } from "@/components/ClientRegistrationForm";
+import { UnifiedClientForm, ClienteCompleto } from "@/components/UnifiedClientForm";
 import CaixaDialog from "@/components/CaixaDialog";
 import PedidoVisualizacao from "@/components/PedidoVisualizacao";
-
-interface Cliente {
-  id?: number;
-  nome: string;
-  cpf: string;
-  telefone?: string;
-  email?: string;
-}
 
 const PDVPage = () => {
   // Hook personalizado para carrinho
@@ -53,7 +46,7 @@ const PDVPage = () => {
   const [searchResults, setSearchResults] = useState([]);
   
   // Estados do cliente
-  const [selectedClient, setSelectedClient] = useState<Cliente | null>(null);
+  const [selectedClient, setSelectedClient] = useState<ClienteCompleto | null>(null);
   const [clientDialogOpen, setClientDialogOpen] = useState(false);
 
   // Estados de desconto e pagamento
@@ -76,10 +69,35 @@ const PDVPage = () => {
   ];
 
   // Dados mock - clientes existentes
-  const clientesExistentes: Cliente[] = [
-    { id: 1, nome: "João Silva", telefone: "(11) 99999-9999", email: "joao@email.com", cpf: "123.456.789-00" },
-    { id: 2, nome: "Maria Santos", telefone: "(11) 88888-8888", email: "maria@email.com", cpf: "987.654.321-00" },
-    { id: 3, nome: "Pedro Costa", telefone: "(11) 77777-7777", email: "pedro@email.com", cpf: "456.789.123-00" },
+  const clientesExistentes: ClienteCompleto[] = [
+    { 
+      id: 1, 
+      tipo: "PF",
+      nome: "João Silva", 
+      cpf: "123.456.789-00",
+      telefone: "(11) 99999-9999", 
+      email: "joao@email.com",
+      cep: "01310-100",
+      logradouro: "Av. Paulista",
+      numero: "1000",
+      bairro: "Bela Vista",
+      cidade: "São Paulo",
+      estado: "SP"
+    },
+    { 
+      id: 2, 
+      tipo: "PF",
+      nome: "Maria Santos", 
+      cpf: "987.654.321-00",
+      telefone: "(11) 88888-8888", 
+      email: "maria@email.com",
+      cep: "04038-001",
+      logradouro: "Rua Augusta",
+      numero: "500",
+      bairro: "Consolação",
+      cidade: "São Paulo",
+      estado: "SP"
+    },
   ];
 
   // Busca de produtos com debounce
@@ -89,7 +107,7 @@ const PDVPage = () => {
         const filtered = produtos.filter(produto =>
           produto.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
           produto.codigo.toLowerCase().includes(searchTerm.toLowerCase())
-        ).slice(0, 5); // Limitando a 5 resultados
+        ).slice(0, 5);
         setSearchResults(filtered);
       }, 300);
 
@@ -144,8 +162,16 @@ const PDVPage = () => {
     setPaymentDialogOpen(false);
   };
 
-  const handleClientSelect = (client: Cliente) => {
+  const handleClientSave = (client: ClienteCompleto) => {
     setSelectedClient(client);
+  };
+
+  const getClientDisplayName = (client: ClienteCompleto) => {
+    return client.tipo === "PF" ? client.nome : client.razaoSocial;
+  };
+
+  const getClientDocument = (client: ClienteCompleto) => {
+    return client.tipo === "PF" ? client.cpf : client.cnpj;
   };
 
   return (
@@ -291,11 +317,20 @@ const PDVPage = () => {
               {selectedClient ? (
                 <div className="space-y-3">
                   <div className="p-3 bg-muted rounded-lg">
-                    <p className="font-inter font-medium">{selectedClient.nome}</p>
-                    <p className="font-inter text-sm text-muted-foreground">CPF: {selectedClient.cpf}</p>
+                    <p className="font-inter font-medium">
+                      {getClientDisplayName(selectedClient)}
+                    </p>
+                    <p className="font-inter text-sm text-muted-foreground">
+                      {selectedClient.tipo}: {getClientDocument(selectedClient)}
+                    </p>
                     {selectedClient.telefone && (
-                      <p className="font-inter text-sm text-muted-foreground">Tel: {selectedClient.telefone}</p>
+                      <p className="font-inter text-sm text-muted-foreground">
+                        Tel: {selectedClient.telefone}
+                      </p>
                     )}
+                    <p className="font-inter text-sm text-muted-foreground">
+                      {selectedClient.cidade}/{selectedClient.estado}
+                    </p>
                   </div>
                   <Button 
                     variant="outline" 
@@ -483,10 +518,10 @@ const PDVPage = () => {
       </div>
 
       {/* Modal de Cliente */}
-      <ClientRegistrationForm
+      <UnifiedClientForm
         isOpen={clientDialogOpen}
         onClose={() => setClientDialogOpen(false)}
-        onClientSelect={handleClientSelect}
+        onClientSave={handleClientSave}
         existingClients={clientesExistentes}
       />
 
