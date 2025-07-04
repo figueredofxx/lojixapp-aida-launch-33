@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +22,7 @@ import {
   Activity,
   UserCheck
 } from "lucide-react";
+import { NovoFuncionarioModal } from "@/components/modals/NovoFuncionarioModal";
 
 interface Funcionario {
   id: number;
@@ -37,6 +37,7 @@ interface Funcionario {
 const SuperAdminFuncionarios = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState("todos");
+  const [isNovoFuncionarioOpen, setIsNovoFuncionarioOpen] = useState(false);
 
   const funcionarios: Funcionario[] = [
     {
@@ -156,6 +157,11 @@ const SuperAdminFuncionarios = () => {
     desenvolvimento: ["Logs técnicos", "Configurações de sistema", "Deploy"]
   };
 
+  const handleNovoFuncionario = (data: any) => {
+    console.log("Novo funcionário:", data);
+    // Aqui implementaria a lógica para criar novo funcionário
+  };
+
   return (
     <div className="p-4 pt-6 space-y-6">
       {/* Header */}
@@ -168,7 +174,10 @@ const SuperAdminFuncionarios = () => {
             Gerenciar funcionários da LojixApp e suas permissões
           </p>
         </div>
-        <Button className="bg-primary hover:bg-primary-hover font-inter mt-4 sm:mt-0">
+        <Button 
+          onClick={() => setIsNovoFuncionarioOpen(true)}
+          className="bg-primary hover:bg-primary-hover font-inter mt-4 sm:mt-0"
+        >
           <Plus className="mr-2 h-4 w-4" />
           Novo Funcionário
         </Button>
@@ -313,6 +322,13 @@ const SuperAdminFuncionarios = () => {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Modal */}
+      <NovoFuncionarioModal
+        isOpen={isNovoFuncionarioOpen}
+        onClose={() => setIsNovoFuncionarioOpen(false)}
+        onSave={handleNovoFuncionario}
+      />
     </div>
   );
 };

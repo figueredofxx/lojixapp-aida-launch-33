@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,16 +14,17 @@ import {
 import { 
   Search, 
   Plus, 
-  Filter, 
   Eye, 
   Edit, 
   Pause, 
   Play,
   Building2,
   Users,
-  Calendar,
-  DollarSign
+  DollarSign,
+  LogIn
 } from "lucide-react";
+import { EmpresaDetailsModal } from "@/components/modals/EmpresaDetailsModal";
+import { NovaEmpresaModal } from "@/components/modals/NovaEmpresaModal";
 
 interface Empresa {
   id: number;
@@ -41,6 +41,9 @@ interface Empresa {
 const SuperAdminEmpresas = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("todas");
+  const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isNovaEmpresaOpen, setIsNovaEmpresaOpen] = useState(false);
 
   const empresas: Empresa[] = [
     {
@@ -160,6 +163,21 @@ const SuperAdminEmpresas = () => {
     }
   ];
 
+  const handleViewDetails = (empresa: Empresa) => {
+    setSelectedEmpresa(empresa);
+    setIsDetailsOpen(true);
+  };
+
+  const handleImpersonate = (empresa: Empresa) => {
+    console.log(`Impersonating ${empresa.nome}`);
+    window.open('/dashboard', '_blank');
+  };
+
+  const handleNovaEmpresa = (data: any) => {
+    console.log("Nova empresa:", data);
+    // Aqui implementaria a lógica para criar nova empresa
+  };
+
   return (
     <div className="p-4 pt-6 space-y-6">
       {/* Header */}
@@ -172,7 +190,10 @@ const SuperAdminEmpresas = () => {
             Gerenciar todas as empresas (tenants) da plataforma
           </p>
         </div>
-        <Button className="bg-primary hover:bg-primary-hover font-inter mt-4 sm:mt-0">
+        <Button 
+          onClick={() => setIsNovaEmpresaOpen(true)}
+          className="bg-primary hover:bg-primary-hover font-inter mt-4 sm:mt-0"
+        >
           <Plus className="mr-2 h-4 w-4" />
           Nova Empresa
         </Button>
@@ -276,8 +297,20 @@ const SuperAdminEmpresas = () => {
                   <TableCell className="font-inter">R$ {empresa.valorMensal.toFixed(2)}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleViewDetails(empresa)}
+                      >
                         <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleImpersonate(empresa)}
+                        title="Acessar como empresa"
+                      >
+                        <LogIn className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="sm">
                         <Edit className="h-4 w-4" />
@@ -297,6 +330,19 @@ const SuperAdminEmpresas = () => {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Modals */}
+      <EmpresaDetailsModal
+        empresa={selectedEmpresa}
+        isOpen={isDetailsOpen}
+        onClose={() => setIsDetailsOpen(false)}
+      />
+
+      <NovaEmpresaModal
+        isOpen={isNovaEmpresaOpen}
+        onClose={() => setIsNovaEmpresaOpen(false)}
+        onSave={handleNovaEmpresa}
+      />
     </div>
   );
 };
