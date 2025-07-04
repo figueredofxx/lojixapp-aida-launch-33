@@ -58,9 +58,10 @@ const navigationItems = [
 ];
 
 export function SuperAdminSidebar() {
-  const { collapsed } = useSidebar();
+  const { state } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
+  const isCollapsed = state === "collapsed";
 
   const isActive = (path: string, end?: boolean) => {
     if (end) {
@@ -73,7 +74,7 @@ export function SuperAdminSidebar() {
     isActiveItem ? "bg-muted text-primary font-medium" : "hover:bg-muted/50";
 
   return (
-    <Sidebar className={collapsed ? "w-14" : "w-60"} collapsible>
+    <Sidebar className={isCollapsed ? "w-14" : "w-60"} collapsible="icon">
       <SidebarTrigger className="m-2 self-end" />
       
       <SidebarContent>
@@ -83,7 +84,7 @@ export function SuperAdminSidebar() {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Shield className="h-5 w-5 text-white" />
             </div>
-            {!collapsed && (
+            {!isCollapsed && (
               <div>
                 <h2 className="font-cantarell font-bold text-lg">Super Admin</h2>
                 <p className="font-inter text-xs text-muted-foreground">LojixApp</p>
@@ -107,7 +108,7 @@ export function SuperAdminSidebar() {
                       }
                     >
                       <item.icon className="mr-2 h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
+                      {!isCollapsed && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
