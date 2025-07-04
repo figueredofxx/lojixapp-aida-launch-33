@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
+import SuperAdminLayout from "./pages/SuperAdminLayout";
 import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
 import PlanosPage from "./pages/PlanosPage";
@@ -30,6 +30,7 @@ const App = () => (
           <Route path="/renovacao" element={<RenovacaoPage />} />
           <Route path="/venda-finalizada" element={<VendaFinalizadaPage />} />
           <Route path="/dashboard/*" element={<Dashboard />} />
+          <Route path="/super-admin/*" element={<SuperAdminLayout />} />
           <Route path="/vendas" element={<Navigate to="/dashboard/vendas" replace />} />
           <Route path="/estoque" element={<Navigate to="/dashboard/estoque" replace />} />
           <Route path="/relatorios" element={<Navigate to="/dashboard/relatorios" replace />} />
