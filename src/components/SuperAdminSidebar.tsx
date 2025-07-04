@@ -20,7 +20,8 @@ import {
   Package,
   BarChart3,
   Settings,
-  Shield
+  Shield,
+  MessageCircle
 } from "lucide-react";
 
 const navigationItems = [
@@ -39,6 +40,11 @@ const navigationItems = [
     title: "Funcionários",
     url: "/super-admin/funcionarios",
     icon: Users
+  },
+  {
+    title: "Suporte",
+    url: "/super-admin/suporte",
+    icon: MessageCircle
   },
   {
     title: "Módulos",

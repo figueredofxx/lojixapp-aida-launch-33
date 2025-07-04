@@ -5,6 +5,7 @@ import { SuperAdminSidebar } from "@/components/SuperAdminSidebar";
 import SuperAdminDashboard from "./SuperAdminDashboard";
 import SuperAdminEmpresas from "./SuperAdminEmpresas";
 import SuperAdminFuncionarios from "./SuperAdminFuncionarios";
+import SuperAdminSuporte from "./SuperAdminSuporte";
 import SuperAdminModulos from "./SuperAdminModulos";
 import SuperAdminRelatorios from "./SuperAdminRelatorios";
 import SuperAdminConfiguracoes from "./SuperAdminConfiguracoes";
@@ -19,6 +20,7 @@ const SuperAdminLayout = () => {
             <Route index element={<SuperAdminDashboard />} />
             <Route path="empresas" element={<SuperAdminEmpresas />} />
             <Route path="funcionarios" element={<SuperAdminFuncionarios />} />
+            <Route path="suporte" element={<SuperAdminSuporte />} />
             <Route path="modulos" element={<SuperAdminModulos />} />
             <Route path="relatorios" element={<SuperAdminRelatorios />} />
             <Route path="configuracoes" element={<SuperAdminConfiguracoes />} />
