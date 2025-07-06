@@ -14,6 +14,7 @@ import FinanceiroPage from "@/pages/FinanceiroPage";
 import FornecedoresPage from "@/pages/FornecedoresPage";
 import ListaProdutosPage from "@/pages/ListaProdutosPage";
 import MultiLojasPage from "@/pages/MultiLojasPage";
+import ProdutosPage from "@/pages/ProdutosPage";
 
 const Dashboard = () => {
   return (
@@ -24,16 +25,17 @@ const Dashboard = () => {
           <DashboardHeader />
           <Routes>
             <Route index element={<DashboardContent />} />
-            <Route path="vendas" element={<VendasPage />} />
-            <Route path="estoque" element={<EstoquePage />} />
-            <Route path="lista-produtos" element={<ListaProdutosPage />} />
-            <Route path="relatorios" element={<RelatoriosPage />} />
             <Route path="pdv" element={<PDVPage />} />
-            <Route path="clientes" element={<ClientesPage />} />
-            <Route path="fornecedores" element={<FornecedoresPage />} />
+            <Route path="produtos" element={<ProdutosPage />} />
+            <Route path="lista-produtos" element={<ListaProdutosPage />} />
+            <Route path="estoque" element={<EstoquePage />} />
             <Route path="financeiro" element={<FinanceiroPage />} />
-            <Route path="multi-lojas" element={<MultiLojasPage />} />
+            <Route path="relatorios" element={<RelatoriosPage />} />
+            <Route path="clientes" element={<ClientesPage />} />
             <Route path="configuracoes" element={<ConfiguracoesPage />} />
+            <Route path="multi-lojas" element={<MultiLojasPage />} />
+            <Route path="vendas" element={<VendasPage />} />
+            <Route path="fornecedores" element={<FornecedoresPage />} />
           </Routes>
         </SidebarInset>
       </div>

@@ -1,89 +1,214 @@
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Building2, Construction, Rocket, Calendar } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Building2, Plus, Settings, Users, ArrowRightLeft, Eye, Edit, Trash2 } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const MultiLojasPage = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const lojas = [
+    {
+      id: 1,
+      nome: "Loja Centro",
+      endereco: "Rua XV de Novembro, 123 - Centro",
+      telefone: "(11) 3333-4444",
+      status: "Ativa",
+      usuarios: 3,
+      ultimaVenda: "2024-01-06"
+    },
+    {
+      id: 2,
+      nome: "Loja Shopping",
+      endereco: "Shopping Center - Loja 45",
+      telefone: "(11) 5555-6666",
+      status: "Ativa",
+      usuarios: 2,
+      ultimaVenda: "2024-01-05"
+    }
+  ];
+
+  const filteredLojas = lojas.filter(loja =>
+    loja.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    loja.endereco.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="flex-1 space-y-6 p-4 pt-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-3 mb-2">
-            <h1 className="font-cantarell text-3xl font-bold tracking-tight text-foreground">
-              Multi-Lojas
-            </h1>
-            <Badge variant="secondary" className="font-inter">
-              Beta
-            </Badge>
-          </div>
+          <h1 className="font-cantarell text-3xl font-bold tracking-tight text-foreground">
+            Multi-Lojas
+          </h1>
           <p className="font-inter text-sm text-muted-foreground">
-            Funcionalidade em desenvolvimento - Gerencie múltiplas lojas em uma única plataforma
+            Gerencie múltiplas lojas em um só lugar
           </p>
+        </div>
+        <div className="flex gap-2">
+          <Button className="bg-primary hover:bg-primary-hover font-inter">
+            <Plus className="mr-2 h-4 w-4" />
+            Nova Loja
+          </Button>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto">
-        <Card className="border-2 border-dashed border-muted-foreground/25">
-          <CardContent className="p-12 text-center">
-            <div className="flex justify-center mb-6">
-              <div className="relative">
-                <Building2 className="h-16 w-16 text-muted-foreground/50" />
-                <div className="absolute -top-2 -right-2">
-                  <Construction className="h-6 w-6 text-orange-500" />
-                </div>
-              </div>
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="font-inter text-sm font-medium text-muted-foreground">
+              Total de Lojas
+            </CardTitle>
+            <Building2 className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="font-cantarell text-2xl font-bold text-foreground">
+              {lojas.length}
             </div>
-            
-            <h2 className="font-cantarell text-2xl font-bold text-foreground mb-4">
-              Funcionalidade em Desenvolvimento
-            </h2>
-            
-            <p className="font-inter text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Estamos trabalhando para trazer a funcionalidade de Multi-Lojas para você. 
-              Em breve você poderá gerenciar múltiplas filiais, controlar estoque entre lojas, 
-              transferir produtos e ter relatórios consolidados.
+            <p className="text-xs text-muted-foreground font-inter mt-1">
+              Lojas ativas
             </p>
+          </CardContent>
+        </Card>
 
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <div className="p-6 bg-secondary/30 rounded-lg">
-                <Building2 className="h-8 w-8 text-primary mb-3 mx-auto" />
-                <h3 className="font-cantarell font-semibold mb-2">Múltiplas Filiais</h3>
-                <p className="font-inter text-sm text-muted-foreground">
-                  Gerencie quantas lojas precisar em uma única plataforma
-                </p>
-              </div>
-              
-              <div className="p-6 bg-secondary/30 rounded-lg">
-                <Rocket className="h-8 w-8 text-primary mb-3 mx-auto" />
-                <h3 className="font-cantarell font-semibold mb-2">Controle Centralizado</h3>
-                <p className="font-inter text-sm text-muted-foreground">
-                  Veja o desempenho de todas as lojas em tempo real
-                </p>
-              </div>
-              
-              <div className="p-6 bg-secondary/30 rounded-lg">
-                <Calendar className="h-8 w-8 text-primary mb-3 mx-auto" />
-                <h3 className="font-cantarell font-semibold mb-2">Em Breve</h3>
-                <p className="font-inter text-sm text-muted-foreground">
-                  Previsão de lançamento para o primeiro trimestre de 2025
-                </p>
-              </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="font-inter text-sm font-medium text-muted-foreground">
+              Usuários Totais
+            </CardTitle>
+            <Users className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="font-cantarell text-2xl font-bold text-foreground">
+              {lojas.reduce((acc, loja) => acc + loja.usuarios, 0)}
             </div>
+            <p className="text-xs text-muted-foreground font-inter mt-1">
+              Em todas as lojas
+            </p>
+          </CardContent>
+        </Card>
 
-            <div className="space-y-4">
-              <Button variant="outline" size="lg" className="font-inter">
-                Ser Notificado do Lançamento
-              </Button>
-              <p className="font-inter text-xs text-muted-foreground">
-                Você receberá um email quando a funcionalidade estiver disponível
-              </p>
-            </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="font-inter text-sm font-medium text-muted-foreground">
+              Transferências
+            </CardTitle>
+            <ArrowRightLeft className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="font-cantarell text-2xl font-bold text-foreground">24</div>
+            <p className="text-xs text-green-600 font-inter mt-1">
+              Este mês
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="font-inter text-sm font-medium text-muted-foreground">
+              Sincronização
+            </CardTitle>
+            <Settings className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="font-cantarell text-2xl font-bold text-green-600">OK</div>
+            <p className="text-xs text-muted-foreground font-inter mt-1">
+              Última: há 5 min
+            </p>
           </CardContent>
         </Card>
       </div>
+
+      {/* Search */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex gap-4">
+            <Input
+              placeholder="Buscar lojas..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="font-inter"
+            />
+            <Button variant="outline" className="font-inter">
+              Filtros
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Lojas Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-cantarell text-xl font-semibold">
+            Lojas ({filteredLojas.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="font-inter">Nome da Loja</TableHead>
+                <TableHead className="font-inter">Endereço</TableHead>
+                <TableHead className="font-inter">Telefone</TableHead>
+                <TableHead className="font-inter">Usuários</TableHead>
+                <TableHead className="font-inter">Status</TableHead>
+                <TableHead className="font-inter">Última Venda</TableHead>
+                <TableHead className="font-inter">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredLojas.map((loja) => (
+                <TableRow key={loja.id}>
+                  <TableCell className="font-inter font-medium">
+                    {loja.nome}
+                  </TableCell>
+                  <TableCell className="font-inter text-sm">
+                    {loja.endereco}
+                  </TableCell>
+                  <TableCell className="font-inter text-sm">
+                    {loja.telefone}
+                  </TableCell>
+                  <TableCell className="font-inter">
+                    {loja.usuarios} usuários
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="secondary" className="bg-green-100 text-green-800 font-inter">
+                      {loja.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="font-inter text-sm">
+                    {new Date(loja.ultimaVenda).toLocaleDateString('pt-BR')}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        <ArrowRightLeft className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 };
