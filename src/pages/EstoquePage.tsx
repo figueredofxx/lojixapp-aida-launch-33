@@ -1,14 +1,11 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Package, BarChart3, AlertTriangle, TrendingUp, Search, Filter, Eye, Boxes, Tag } from "lucide-react";
-import { ProductRegistrationForm } from "@/components/ProductRegistrationForm";
+import { BarChart3, AlertTriangle, TrendingUp, Search, Filter, Eye, Boxes, Tag } from "lucide-react";
 import { StockLaunchForm } from "@/components/StockLaunchForm";
 
 const EstoquePage = () => {
-  const [showRegistrationForm, setShowRegistrationForm] = useState(false);
   const [showStockLaunchForm, setShowStockLaunchForm] = useState(false);
 
   const lowStockProducts = [
@@ -40,13 +37,6 @@ const EstoquePage = () => {
             <Filter className="mr-2 h-4 w-4" />
             Filtros
           </Button>
-          <Button 
-            onClick={() => setShowRegistrationForm(true)}
-            className="bg-primary hover:bg-primary-hover font-inter"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Cadastrar Produto
-          </Button>
         </div>
       </div>
 
@@ -57,7 +47,7 @@ const EstoquePage = () => {
             <CardTitle className="font-inter text-sm font-medium text-muted-foreground">
               Total de Produtos
             </CardTitle>
-            <Package className="h-4 w-4 text-primary" />
+            <BarChart3 className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="font-cantarell text-2xl font-bold text-foreground">1,847</div>
@@ -209,7 +199,7 @@ const EstoquePage = () => {
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <Package className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+            <BarChart3 className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
             <p className="font-inter text-muted-foreground text-lg mb-2">
               Digite algo na busca para encontrar produtos
             </p>
@@ -221,19 +211,7 @@ const EstoquePage = () => {
       </Card>
 
       {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setShowRegistrationForm(true)}>
-          <CardContent className="flex items-center p-6">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
-              <Plus className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-cantarell font-semibold">Novo Produto</h3>
-              <p className="font-inter text-sm text-muted-foreground">Cadastrar item</p>
-            </div>
-          </CardContent>
-        </Card>
-
+      <div className="grid gap-4 md:grid-cols-3">
         <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setShowStockLaunchForm(true)}>
           <CardContent className="flex items-center p-6">
             <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
@@ -270,16 +248,6 @@ const EstoquePage = () => {
           </CardContent>
         </Card>
       </div>
-
-      {showRegistrationForm && (
-        <ProductRegistrationForm 
-          onClose={() => setShowRegistrationForm(false)}
-          onSave={(product) => {
-            console.log('Produto cadastrado:', product);
-            setShowRegistrationForm(false);
-          }}
-        />
-      )}
 
       {showStockLaunchForm && (
         <StockLaunchForm

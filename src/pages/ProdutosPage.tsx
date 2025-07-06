@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,11 +24,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ProductRegistrationForm } from "@/components/ProductRegistrationForm";
 
 const ProdutosPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [showCadastroForm, setShowCadastroForm] = useState(false);
+  const [showRegistrationForm, setShowRegistrationForm] = useState(false);
 
   const produtos = [
     {
@@ -99,11 +100,11 @@ const ProdutosPage = () => {
             Marcas
           </Button>
           <Button 
-            onClick={() => setShowCadastroForm(true)}
+            onClick={() => setShowRegistrationForm(true)}
             className="bg-primary hover:bg-primary-hover font-inter"
           >
             <Plus className="mr-2 h-4 w-4" />
-            Novo Produto
+            Cadastrar Produto
           </Button>
         </div>
       </div>
@@ -311,88 +312,14 @@ const ProdutosPage = () => {
         </CardContent>
       </Card>
 
-      {showCadastroForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-2xl mx-4">
-            <CardHeader>
-              <CardTitle className="font-cantarell text-xl">Cadastrar Novo Produto</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label className="font-inter text-sm font-medium">Nome do Produto *</label>
-                  <Input placeholder="Ex: iPhone 15 Pro Max" className="mt-1" />
-                </div>
-                <div>
-                  <label className="font-inter text-sm font-medium">Tempo de Garantia *</label>
-                  <Input placeholder="Ex: 12 meses" className="mt-1" />
-                </div>
-                <div>
-                  <label className="font-inter text-sm font-medium">Tipo de Controle *</label>
-                  <Select>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="imei">Controlado por IMEI</SelectItem>
-                      <SelectItem value="serie">Controlado por Número de Série</SelectItem>
-                      <SelectItem value="codigo">Controlado por Código de Barras</SelectItem>
-                      <SelectItem value="quantidade">Controlado por Quantidade</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="font-inter text-sm font-medium">Preço de Venda *</label>
-                  <Input placeholder="R$ 0,00" className="mt-1" />
-                </div>
-                <div>
-                  <label className="font-inter text-sm font-medium">Estado *</label>
-                  <Select>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="novo">Novo</SelectItem>
-                      <SelectItem value="seminovo">Seminovo</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="font-inter text-sm font-medium">Marca *</label>
-                  <Select>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {marcas.map(marca => (
-                        <SelectItem key={marca} value={marca.toLowerCase()}>{marca}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div>
-                <label className="font-inter text-sm font-medium">Descrição do Produto</label>
-                <Input placeholder="Descrição detalhada do produto" className="mt-1" />
-                <p className="font-inter text-xs text-muted-foreground mt-1">
-                  Você pode gerar uma ficha técnica automática com IA
-                </p>
-              </div>
-              <div className="flex justify-end gap-3 pt-4">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowCadastroForm(false)}
-                  className="font-inter"
-                >
-                  Cancelar
-                </Button>
-                <Button className="bg-primary hover:bg-primary-hover font-inter">
-                  Cadastrar Produto
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      {showRegistrationForm && (
+        <ProductRegistrationForm 
+          onClose={() => setShowRegistrationForm(false)}
+          onSave={(product) => {
+            console.log('Produto cadastrado:', product);
+            setShowRegistrationForm(false);
+          }}
+        />
       )}
     </div>
   );

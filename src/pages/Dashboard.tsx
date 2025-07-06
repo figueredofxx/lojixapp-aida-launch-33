@@ -15,6 +15,7 @@ import FornecedoresPage from "@/pages/FornecedoresPage";
 import ListaProdutosPage from "@/pages/ListaProdutosPage";
 import MultiLojasPage from "@/pages/MultiLojasPage";
 import ProdutosPage from "@/pages/ProdutosPage";
+import CategoriasPage from "@/pages/CategoriasPage";
 
 const Dashboard = () => {
   return (
@@ -28,6 +29,7 @@ const Dashboard = () => {
             <Route path="pdv" element={<PDVPage />} />
             <Route path="produtos" element={<ProdutosPage />} />
             <Route path="lista-produtos" element={<ListaProdutosPage />} />
+            <Route path="categorias" element={<CategoriasPage />} />
             <Route path="estoque" element={<EstoquePage />} />
             <Route path="financeiro" element={<FinanceiroPage />} />
             <Route path="relatorios" element={<RelatoriosPage />} />
